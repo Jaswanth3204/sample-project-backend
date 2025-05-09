@@ -1,26 +1,24 @@
 const express = require('express');
 const mongoose = require('mongoose');
-const cors = require('cors');  // <-- Import CORS
-const userRoutes = require('./apis');  // Import routes
-require('dotenv').config();  // Load .env file for environment variables
-
+const cors = require('cors');
+const userRoutes = require('./apis');
+require('dotenv').config();  // Load .env file
 
 const app = express();
-const port = 3001;
+const port = process.env.PORT || 3001;  // Use environment port or fallback to 3001
 
-// Enable CORS for frontend at http://localhost:3000
+// Enable CORS for multiple origins (adjust according to your needs)
 app.use(cors({
-    origin: 'http://localhost:3002',
+    origin: ['http://localhost:3002', 'http://localhost:3000', 'https://your-deployed-frontend-url.com'],
     credentials: true
 }));
 
 // Middleware to parse JSON bodies
 app.use(express.json());
 
-// MongoDB connection URL from .env file
+// MongoDB connection URL
 const MONGO_URL = process.env.MONGO_URL;
 
-// Connect to MongoDB
 mongoose.connect(MONGO_URL, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
@@ -32,7 +30,7 @@ mongoose.connect(MONGO_URL, {
     console.error('❌ MongoDB connection error:', err.message);
 });
 
-// Use user routes for "/user" prefix
+// Use user routes for /user prefix
 app.use('/user', userRoutes);
 
 // Start the server
